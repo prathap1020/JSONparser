@@ -1,0 +1,108 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <link rel="stylesheet" href="/css/custom.css">
+        <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/4.0.0/css/bootstrap.min.css" integrity="sha384-Gn5384xqQ1aoWXA+058RXPxPg6fy4IWvTNh0E263XmFcJlSAwiGgFAW/dAiS6JXm" crossorigin="anonymous">
+        <link href="/css/jquery.json-viewer.css" rel="stylesheet">
+        <script src="https://code.jquery.com/jquery-3.4.1.slim.min.js" integrity="sha256-pasqAKBDmFT4eHoN2ndd6lN370kFiGUFyTiUHWhU7k8=" crossorigin="anonymous"></script>
+    </head>
+    <style>
+        .mainContainer
+        {
+            padding: 10px;
+        }
+        .inputData
+        {
+            padding: 10px;
+            height:100%;
+            width: 100%;
+            background: #fff;
+        }
+        .parserJson
+        {
+            overflow: scroll;
+            height:calc(100vh - 110px);
+            width: 100%;
+            background: #fff;
+            border: 1px solid black;
+        }
+        .btn
+        {
+            margin:10px 0px 10px 0px;
+            width: 100%;
+        }
+        body
+        {
+            background:#fdfdfd;
+        }
+        .appmenu
+        {
+            padding: 5px;
+            height: 50px;
+            width: 100%;
+            margin-left: 10px;
+        }
+        .alert
+        {
+            margin: 10px;
+        }
+    </style>
+    <body>
+        {{>header}}
+        <div class="mainContainer">
+            <div class="row">
+                <div class="col-md-5">
+                    <textarea name="message" id="dataInput" class="inputData"></textarea>
+                </div>
+                <div class="col-md-1">
+                    <button id="loadbutton" type="button" class="btn loadbtn btn-success"> Load </button>
+                    <button type="button" class="btn btn-outline-success">Save</button>
+                    <div class="btn-group dropright">
+                    <button type="button" class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
+                        Open
+                    </button>
+                    <div class="dropdown-menu">
+                        <a class="dropdown-item" href="#">json1</a>
+                    </div>
+                    </div>
+                </div>
+                <div class="col-md-6">
+                    <div  class="parserJson">
+                    <div class="alert alert-danger" role="alert">
+                       
+                    </div>
+                    <pre id="json-viewer"></pre>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </body>
+        <script>
+            $(document).ready(function()
+            {
+                $('.alert').hide()
+                $("#loadbutton").click(function()
+                {
+                    try 
+                    {
+                    var input = eval('(' + $('#dataInput').val() + ')');
+                    $('#json-viewer').html();
+                        $('#json-viewer').jsonViewer(input, {
+                        withQuotes:false
+                        })
+                        $('.alert').hide()
+                    }
+                    catch (error)
+                    {
+                        $('#json-viewer').html();
+                        $('.alert').html(error)
+                        $('.alert').show()
+                    }
+                });
+            });
+        </script>
+    <script src="/js/jquery.json-viewer.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
+<script src="https://stackpath.bootstrapcdn.com/bootstrap/4.3.1/js/bootstrap.min.js" integrity="sha384-JjSmVgyd0p3pXB1rRibZUAYoIIy6OrQ6VrjIEaFf/nJGzIxFDsf4x0xIM+B07jRM" crossorigin="anonymous"></script>
+
+</html>
