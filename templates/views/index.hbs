@@ -26,7 +26,7 @@
             background: #fff;
             border: 1px solid black;
         }
-        .btn
+        .cbtns .btn
         {
             margin:10px 0px 10px 0px;
             width: 100%;
@@ -54,21 +54,21 @@
                 <div class="col-md-5">
                     <textarea name="message" id="dataInput" class="inputData"></textarea>
                 </div>
-                <div class="col-md-1">
+                <div class="col-md-1 cbtns ">
                     <button id="loadbutton" type="button" class="btn loadbtn btn-success"> Load </button>
-                    <button type="button" class="btn btn-outline-success">Save</button>
+                    <button type="button" class="btn btn-outline-success" data-toggle="modal" data-target="#exampleModalCenter">Save</button>
                     <div class="btn-group dropright">
                     <button type="button" class="btn btn-outline-success dropdown-toggle" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
                         Open
                     </button>
-                    <div class="dropdown-menu">
-                        <a class="dropdown-item" href="#">json1</a>
+                    <div id="linklist" class="dropdown-menu">
+                        <div> No Files saved</div>
                     </div>
                     </div>
                 </div>
                 <div class="col-md-6">
                     <div  class="parserJson">
-                    <div class="alert alert-danger" role="alert">
+                    <div id="alert1" class="alert alert-danger" role="alert">
                        
                     </div>
                     <pre id="json-viewer"></pre>
@@ -76,13 +76,79 @@
                 </div>
             </div>
         </div>
+
+        <!-- Modal -->
+        <div class="modal fade" id="exampleModalCenter" tabindex="-1" role="dialog" aria-labelledby="exampleModalCenterTitle" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered" role="document">
+            <div class="modal-content">
+            <div class="modal-header">
+                <h5 class="modal-title" id="exampleModalLongTitle">Save Json</h5>
+                <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                <span aria-hidden="true">&times;</span>
+                </button>
+            </div>
+            <div class="modal-body">
+                 <div id="alert2" class="alert alert-danger" role="alert"></div>
+                <input class="form-control form-control-lg" id="filename" type="text" placeholder="Name of JSON">
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-danger" data-dismiss="modal">Close</button>
+                <button type="button" id="fsave" class="btn btn-success">Save </button>
+            </div>
+            </div>
+        </div>
+        </div>
+        
     </body>
         <script>
+            myStorage = window.localStorage;
             $(document).ready(function()
             {
-                $('.alert').hide()
+                $('#alert1').hide()
                 $("#loadbutton").click(function()
                 {
+                    try 
+                    {
+                    var input = eval('(' + $('#dataInput').val() + ')');
+                    $('#json-viewer').html();
+                        $('#json-viewer').jsonViewer(input, {
+                        withQuotes:false
+                        })
+                        $('#alert1').hide()
+                    }
+                    catch (error)
+                    {
+                        $('#json-viewer').html();
+                        $('#alert1').html(error)
+                        $('#alert1').show()
+                    }
+                });
+
+                 $("#fsave").click(function()
+                {
+                    try 
+                    {
+                        if( $('#filename').val() != "" && $('#filename').val() != null)
+                        {
+                            myStorage.setItem($('#filename').val(), $('#dataInput').val())
+                            $('#myModal').modal('hide');
+                            ChangeOpenlist();
+                        }
+                        else
+                        {
+                             $('#alert2').html("Please provide the file name")
+                        }
+                    }
+                    catch (error)
+                    {
+                        alert(error)
+                    }
+                });
+
+                $("#droplistelement").click(function()
+                {
+                    console.log("test");
+                    $(this).val(window.localStorage.getItem($(this).data('data-element')));
                     try 
                     {
                     var input = eval('(' + $('#dataInput').val() + ')');
@@ -95,11 +161,45 @@
                     catch (error)
                     {
                         $('#json-viewer').html();
-                        $('.alert').html(error)
-                        $('.alert').show()
+                        $('#alert1').html(error)
+                        $('#alert1').show()
+                    }
+                });
+
+                function ChangeOpenlist()
+                {
+                    $('#linklist').empty();
+                    for (var files in window.localStorage) 
+                    {
+                        if(!["length","key","getItem","setItem","removeItem","clear"].includes(files))
+                        {
+                            link = "<a class='dropdown-item droplistelement'   data-element='"+files+"'>"+files+"</a>"
+                            $('#linklist').append(link);
+                        }
+                    }
+                }
+                ChangeOpenlist();
+                $('.droplistelement').on('click', function() {
+                    $("#dataInput").val(window.localStorage.getItem($(this).attr("data-element")))
+                    try 
+                    {
+                    var input = eval('(' + $('#dataInput').val() + ')');
+                    $('#json-viewer').html();
+                        $('#json-viewer').jsonViewer(input, {
+                        withQuotes:false
+                        })
+                        $('#alert1').hide()
+                    }
+                    catch (error)
+                    {
+                        $('#json-viewer').html();
+                        $('#alert1').html(error)
+                        $('#alert1').show()
                     }
                 });
             });
+
+
         </script>
     <script src="/js/jquery.json-viewer.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.7/umd/popper.min.js" integrity="sha384-UO2eT0CpHqdSJQ6hJty5KVphtPhzWj9WO1clHTMGa3JDZwrnQq4sF86dIHNDz0W1" crossorigin="anonymous"></script>
